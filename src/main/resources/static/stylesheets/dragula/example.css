@@ -1,0 +1,246 @@
+
+.container {
+    display: table-cell;
+    background-color: rgba(255, 255, 255, 0.2);
+    width: 50%;
+}
+
+.container:nth-child(odd) {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/*
+ * note that styling gu-mirror directly is a bad practice because it's too generic.
+ * you're better off giving the draggable elements a unique class and styling that directly!
+ */
+.container > div,
+.gu-mirror {
+    margin: 10px;
+    padding: 10px;
+    float: left;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.container > div {
+    cursor: move;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.gu-mirror {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.container .ex-moved {
+    background-color: #e74c3c;
+}
+
+.container.ex-over {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/*==================example实现开始==================*/
+ /* elementlistigation style */
+        #elementlist {
+            height: 34px;
+            width: 207.2px;
+            /*font: 12px Geneva, Arial, Helvetica, sans-serif;*/
+            /*background: #2D2D2D;*/; /*背影黑色*/
+            /*添加边框*/
+            /*border: 1px solid #323232;*/
+            border-radius: 3px;
+            /*min-width: 500px;*/
+            margin-left: 0px;
+            padding-left: 0px;
+        }
+
+        #elementlist li {
+            list-style: none;
+            /*display: block;*/
+            /*float: left;*/
+            /*height: 40px;*/
+            position: relative;
+        }
+
+        #elementlist li a {
+            padding: 0px 10px 0px 20px;
+            margin: 0px 0;
+            line-height: 25px;
+            text-decoration: none;
+            height: 26.3px;
+            color: #555;
+        }
+
+        #elementlist ul {
+            background: white;
+            padding: 0px;
+            border-bottom: 1px solid white;
+            border-right: 1px solid white;
+            border-left: 1px solid white;
+            border-radius: 0px 0px 3px 3px;
+            box-shadow: 2px 2px 3px white;
+            -webkit-box-shadow: 2px 2px 3px white;
+            -moz-box-shadow: 2px 2px 3px white;
+            width: 207.2px;
+            height: 34px;
+        }
+
+        #elementlist .site-name, #elementlist .site-name:hover {
+            padding-left: 10px;
+            padding-right: 10px;
+            /*color: #FFF;*/
+            color: #555;
+            /*background: url(images/logo.png) no-repeat 10px 5px;*/
+            /*width: 160px;*/
+        }
+
+        #elementlist .site-name a {
+            width: 129px;
+            overflow: hidden;
+        }
+
+        #elementlist li a {
+            display: block;
+        }
+
+        #elementlist ul li {
+            border-right: none;
+            border-bottom: 1px solid white;
+            width: 207.2px;
+            height: 22px;
+        }
+
+        #elementlist ul li a {
+            background-color: white;
+            font-weight: normal;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            width: 207.2px;
+            height: 21.5px;
+            text-shadow: 1px 1px 1px #FFF;
+            border-bottom: 1px solid white;
+        }
+
+        #elementlist ul li a:hover {
+            background: #3399FF;
+        }
+
+        #elementlist ul li:last-child {
+            border-bottom: none;
+        }
+
+        #elementlist ul li:last-child a {
+            border-bottom: none;
+        }
+
+        /* Sub menus */
+        #elementlist ul {
+            display: none;
+            visibility: hidden;
+            position: absolute;
+            top: 27px;
+        }
+
+        /* Third-level menus */
+        #elementlist ul ul {
+            top: 0px;
+            left: 207.2px;
+            display: none;
+            visibility: hidden;
+            border: 1px solid white;
+        }
+
+        /* Fourth-level menus */
+        #elementlist ul ul ul {
+            top: 0px;
+            left: 207.2px;
+            display: none;
+            visibility: hidden;
+            border: 1px solid white;
+        }
+
+        #elementlist ul li {
+            display: block;
+            visibility: visible;
+        }
+
+        #elementlist li:hover > ul {
+            display: block;
+            visibility: visible;
+        }
+
+/* 元素显示颜色变换*/
+.eleAttribute {
+    font-weight: 600;
+    font-family: "STKaiti";
+    border: 1px solid #BECAD9;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    background-color: #BECAD9;
+
+}
+
+.eleGroup {
+    font-weight: 600;
+    font-family: "STKaiti";
+    border: 1px solid #AFB1B0;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    background-color: #AFB1B0;
+
+}
+
+.eleSum {
+    font-weight: 600;
+    font-family: "STKaiti";
+    border: 1px solid #929493;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    background-color: #929493;
+
+}
+
+.eleCount {
+    font-weight: 600;
+    font-family: "STKaiti";
+    border: 1px solid #BEC0BF;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    background-color: #BEC0BF;
+
+}
+
+.eleDistinct {
+    font-weight: 600;
+    font-family: "STKaiti";
+    border: 1px solid #E2E4E1;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    background-color: #E2E4E1;
+
+}
+
+.eleMax {
+    font-weight: 600;
+    font-family: "STKaiti";
+    border: 1px solid #B7C5B4;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    background-color: #B7C5B4;
+
+}
+
+.eleAvg {
+    font-weight: 600;
+    font-family: "STKaiti";
+    border: 1px solid #7D8971;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    background-color: #7D8971;
+}
+
+/*==================example实现结束==================*/

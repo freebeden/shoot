@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yysports.shoot.mapper.ShootMapper" >
+
+	<resultMap id="BaseResultMap" type="com.yysports.shoot.model.ShootBean" >
+		<!-- 结果集的主键 -->
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<!-- 普通的列  -column 是数据库中字段， property是实体类中字段-->
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="jwt" property="jwt" jdbcType="VARCHAR" />
+		<result column="serial_no" property="serialNo" jdbcType="VARCHAR" />
+
+
+		<result column="pid" property="pid" jdbcType="INTEGER" />
+		<result column="sid" property="sid" jdbcType="INTEGER" />
+		<result column="exec_status" property="execStatus" jdbcType="INTEGER" />
+		<result column="activity_item_id" property="activityItemId" jdbcType="VARCHAR" />
+		<result column="item_name" property="itemName" jdbcType="VARCHAR" />
+		<result column="item_model" property="itemModel" jdbcType="VARCHAR" />
+		<result column="register_no" property="registerNo" jdbcType="VARCHAR" />
+		<result column="is_size" property="isSize" jdbcType="VARCHAR" />
+		<result column="shoes_size" property="shoesSize" jdbcType="VARCHAR" />
+		<result column="activity_shop_id" property="activityShopId" jdbcType="VARCHAR" />
+		<result column="shop_name" property="shopName" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<result column="uid" property="uid" jdbcType="INTEGER" />
+		<result column="serial_no" property="serialNo" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="update_date" property="updateDate" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+
+	<!--parameterType(输入类型)、resultType(输出类型)-->
+	<select id="loginByAccount" resultMap="BaseResultMap">
+        SELECT * FROM users WHERE id = #{id,jdbcType=INTEGER}
+    </select>
+
+	<select id="queryUserList"  resultMap="BaseResultMap">
+		SELECT u.id,jwt,u.uid user_id,activity_item_id,pid,register_no
+		FROM users u,record_list l where u.id=l.uid and u.exec_stat='1'
+	</select>
+
+	<select id="queryJobTaskList" parameterType="Map" resultType="com.yysports.shoot.model.JobTask">
+		SELECT
+		uuid,
+		job_name jobName,
+		description description,
+		cron_expression cronExpression,
+		job_status jobStatus,
+		job_group jobGroup,
+		create_time createTime,
+		update_time updateTime,
+		job_path jobPath
+		FROM job_task
+		<where>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(jobName)"> AND job_name=#{jobName} </if>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(jobGroup)"> AND job_group=#{jobGroup} </if>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(uuid)"> AND uuid=#{uuid} </if>
+		</where>
+	</select>
+
+	<insert id="updateTaskStatus" parameterType="Map">
+		UPDATE job_task
+		set
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(cronExpression)"> cron_expression=#{cronExpression},</if>
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(jobStatus)"> job_status=#{jobStatus},</if>
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(description)"> description=#{description},</if>
+		update_time=now()
+		<where>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(jobName)"> AND job_name=#{jobName} </if>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(jobGroup)"> AND job_group=#{jobGroup} </if>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(uuid)"> AND uuid=#{uuid} </if>
+		</where>
+	</insert>
+
+	<select id="queryJobTask" parameterType="Map" resultType="com.yysports.shoot.model.JobTask">
+		SELECT
+		uuid,
+		job_name jobName,
+		description description,
+		cron_expression cronExpression,
+		job_status jobStatus,
+		job_group jobGroup,
+		create_time createTime,
+		update_time updateTime
+		FROM job_task
+		<where>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(jobName)"> AND job_name=#{jobName} </if>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(jobGroup)"> AND job_group=#{jobGroup} </if>
+			<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(uuid)"> AND uuid=#{uuid} </if>
+		</where>
+	</select>
+
+	<update id="updateUserById" parameterType="com.yysports.shoot.model.ShootBean">
+		update users set exec_stat='2' where id=#{id}
+	</update>
+
+	<insert id="batchInsert" parameterType="java.util.List">
+		insert into shoot_info
+		(item_model,shop_name,shoes_size,uid,serial_no)
+		<foreach collection="list" item="item" index="index" separator="union all">
+			select
+			#{item.itemModel, jdbcType=VARCHAR},
+			#{item.shopName, jdbcType=VARCHAR},
+			#{item.shoesSize, jdbcType=VARCHAR},
+			#{item.uid, jdbcType=INTEGER},
+			#{item.serialNo, jdbcType=VARCHAR}
+		</foreach>
+	</insert>
+
+	<select id="queryLoginShoot" parameterType="map" resultMap="BaseResultMap">
+        select
+            s.sid,
+            s.item_model,
+            s.shop_name,
+            s.shoes_size,
+            s.uid,
+            s.exec_status,
+            u.id,
+            u.username,
+            u.password,
+            u.jwt,
+            s.serial_no,
+            u.uid user_id
+        from shoot_info s,users u
+        where s.uid = u.id
+         and s.exec_status=#{execStatus}
+         order by u.qid
+	</select>
+
+    <update id="updateShootInfo" parameterType="com.yysports.shoot.model.ShootBean">
+        update shoot_info set
+        exec_status=#{execStatus}
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(errStat)"> ,err_stat=#{errStat}</if>
+         where sid=#{sid}
+    </update>
+
+    <insert id="addRecordShootBean" parameterType="com.yysports.shoot.model.ShootBean">
+        insert into record_list
+        (
+        activity_item_id,
+        item_model,
+        shoes_size,
+        activity_shop_id,
+        shop_name,
+        item_name,
+        uid,
+        sid,
+        register_no,
+        serial_no
+        )
+        values
+        (
+        #{activityItemId, jdbcType=VARCHAR},
+        #{itemModel, jdbcType=VARCHAR},
+        #{shoesSize, jdbcType=VARCHAR},
+        #{activityShopId, jdbcType=VARCHAR},
+        #{shopName, jdbcType=VARCHAR},
+        #{itemName, jdbcType=VARCHAR},
+        #{uid, jdbcType=VARCHAR},
+        #{sid, jdbcType=VARCHAR},
+        #{registerNo, jdbcType=VARCHAR},
+        #{serialNo, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="queryResultBean" resultMap="BaseResultMap">
+        select u.jwt,l.serial_no,u.id,l.activity_item_id,l.pid  from users u,record_list l
+        where u.id=l.uid and state in('1','9')
+        order by u.id
+    </select>
+
+    <update id="updateRecordList"  parameterType="com.yysports.shoot.model.ShootBean">
+      update record_list set state=#{state},
+      <if test="@com.yysports.shoot.util.Ognl@isNotEmpty(registerNo)"> register_no=#{registerNo},</if>
+      update_time=date_format(now(),'%Y-%m-%d %H:%i:%s')
+      ,update_date=date_format(now(),'%Y-%m-%d')
+      where pid=#{pid}
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(registerNo)"> and register_no=#{registerNo}</if>
+    </update>
+
+	<select id="queryShootBeanById" parameterType="Long" resultMap="BaseResultMap">
+		select * from users where id={id}
+	</select>
+
+	<update id="updateRecordUUid"  parameterType="com.yysports.shoot.model.ShootBean">
+      update record_list set register_no=#{registerNo},state='1',create_time=date_format(now(),'%Y-%m-%d %H:%i:%s')
+      where activity_item_id=#{activityItemId} and uid=#{uid}
+    </update>
+
+	<select id="queryShootLoginBean" resultMap="BaseResultMap">
+		select l.pid,l.uid,username,u.jwt,l.item_name,l.item_model,
+		l.register_no,l.state,l.create_time,l.update_time,l.shop_name
+		from record_list l,users u
+		where l.uid = u.id
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(state)"> and l.state=#{state}</if>
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(username)"> and u.username=#{username}</if>
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(itemModel)"> and l.item_model=#{itemModel}</if>
+		<if test="@com.yysports.shoot.util.Ognl@isNotEmpty(updateDate)"> and l.update_date=#{updateDate}</if>
+		 order by l.update_time desc;
+	</select>
+	<insert id="addRecordList" parameterType="com.yysports.shoot.model.ShootBean">
+		insert into record_list_check
+		(uid,
+		activity_item_id,
+		item_model,
+		register_no,
+		activity_shop_id,
+		shop_name,
+		state)
+		values
+        (
+        #{uid, jdbcType=VARCHAR},
+        #{activityItemId, jdbcType=VARCHAR},
+        #{itemModel, jdbcType=VARCHAR},
+        #{registerNo, jdbcType=VARCHAR},
+        #{activityShopId, jdbcType=VARCHAR},
+        #{shopName, jdbcType=VARCHAR},
+        #{state, jdbcType=VARCHAR}
+        )
+	</insert>
+
+	<update id="updateUserInfo" parameterType="com.yysports.shoot.model.ShootBean">
+		update users set
+		jwt_stat='2'
+		where id=#{uid}
+	</update>
+	<select id="getShootBeanList" resultMap="BaseResultMap">
+		select * from users where id &gt;= #{minUid} and id &lt;= #{maxUid}
+		order by id
+	</select>
+
+	<update id="updateRecordStat"  parameterType="com.yysports.shoot.model.ShootBean">
+      update record_list set state=#{state}
+      where pid=#{pid}
+    </update>
+
+	<update id="updateUser" parameterType="java.util.HashMap">
+		update users set jwt=#{jwt},limitedUser=#{limitedUser} where id=#{id}
+	</update>
+
+	<select id="queryAllUsers" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select id,uid user_id from users where jwt_stat=#{jwt_stat}
+	</select>
+
+	<update id="updateUserState" parameterType="com.yysports.shoot.model.ShootBean">
+		update users set jwt_stat=#{jwtStat} where id=#{id}
+	</update>
+	<select id="queryThreadCount" resultType="String">
+		select thread_count threadCount from thread_count where id=1
+	</select>
+
+	<insert id="addNotReq" parameterType="com.yysports.shoot.model.ShootBean">
+		insert into record_list(activity_item_id,uid,shop_name,activity_shop_id,state,register_no,create_time)
+		values (
+			#{activityItemId},
+			#{uid},
+			#{shopName},
+			#{activityShopId},
+			#{state},
+			#{registerNo},
+			date_format(now(),'%Y-%m-%d %H:%i:%s')
+		)
+	</insert>
+
+	<update id="updateNotReq" parameterType="com.yysports.shoot.model.ShootBean">
+		update shoot_info set exec_status='8' where register_no=#{registerNo}
+	</update>
+
+
+
+</mapper>

@@ -1,0 +1,102 @@
+apply plugin: 'war'
+buildscript {
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        maven { url "http://172.16.60.188:8081/nexus/content/groups/public" }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE")
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'maven'
+    apply plugin: 'spring-boot'
+    apply plugin: 'jacoco'
+    group = 'com.yysports'
+    version = '1.0'
+    ext {
+        springBootVersion = "1.4.2.RELEASE"
+    }
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        maven { url "http://172.16.60.188:8081/nexus/content/groups/public" }
+    }
+
+    tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
+
+    eclipse {
+        classpath {
+            downloadSources = true
+            downloadJavadoc = true
+        }
+    }
+    jacoco {
+        toolVersion = "0.8.2"
+        reportsDir = file("$buildDir/customJacocoReportDir")
+    }
+
+
+}
+
+repositories {
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+    maven { url "http://172.16.60.188:8081/nexus/content/groups/public" }
+}
+
+apply plugin: 'war'
+
+ext.set("env", hasProperty('env') ? env : 'rc')
+
+springBoot {
+    mainClass = 'com.yysports.shoot.ShootApplication'
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}"){
+        exclude group: 'org.slf4j'
+        exclude group: 'log4j'
+    }
+    compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+    compile 'org.springframework.boot:spring-boot-starter-freemarker'
+    /*compile 'org.springframework.boot:spring-boot-starter-thymeleaf'*/
+    compile 'net.sourceforge.nekohtml:nekohtml:1.9.22'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1'
+    /*providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'*/
+    compile 'org.springframework.boot:spring-boot-starter-test'
+    compile('mysql:mysql-connector-java:5.1.28')
+    compile("org.apache.tomcat.embed:tomcat-embed-jasper")
+    compile("javax.servlet:jstl:1.2")
+    compile group: 'mysql', name: 'mysql-connector-java'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.38'
+
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.6'
+    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.3'
+    compile ('com.101tec:zkclient:0.7'){
+        exclude group :'slf4j-api'
+        exclude group :'log4j'
+        exclude group :'org.slf4j'
+    }
+
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.0'
+    compile("org.quartz-scheduler:quartz:2.2.1")
+    compile("org.springframework:spring-context-support")
+    compile("org.apache.commons:commons-collections4:4.1")
+    /*compile("log4j:log4j:1.2.17")
+    compile("org.slf4j:slf4j-api:1.7.25")
+    compile("org.slf4j:slf4j-log4j12:1.7.25")*/
+    compile group: 'org.mortbay.jetty', name: 'jetty', version: '6.1.26'
+    compile group: 'com.caucho', name: 'hessian', version: '4.0.7'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.9'
+    compile group: 'org.directwebremoting', name: 'dwr', version: '2.0.3'
+    compile group: 'org.json', name: 'json', version: '20160810'
+    compile group: 'commons-httpclient', name: 'commons-httpclient', version: '3.1'
+}
+
+
